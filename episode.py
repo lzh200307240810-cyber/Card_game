@@ -1,8 +1,7 @@
 import random
 
-from cards import DeckManager
+from card_hub import DeckManager
 from environment import CleanEnvironment, BattleEnvironment, RainEnvironment
-from skill import Skill
 from utils import WaterEntity, FireEntity
 
 
@@ -32,7 +31,8 @@ class GameEngine:
         """处理玩家的交互输入"""
         print("\n👇 你的手牌：")
         for i, card in enumerate(self.player_deck):
-            print(f"  [{i + 1}] {card.name} (类型: {card.skill_type})")
+            # 🌟 修复：把 skill_type 改成了 card_type，并增加了 cost 显示
+            print(f"  [{i + 1}] 【{card.name}】 (类型: {card.card_type} | 描述: {card.description})")
 
         while True:
             choice = input(f"请输入你要打出的卡牌编号 (1-{len(self.player_deck)}): ")
@@ -47,6 +47,14 @@ class GameEngine:
         # 只要双方都活着，循环就一直进行
         while self.player.hp > 0 and self.enemy.hp > 0:
             print(f"\n========== 🔔 第 {self.round} 大回合开始 ==========")
+
+            self.arena.current_weather.on_turn_start(self.player, self.arena)
+            self.arena.current_weather.on_turn_start(self.enemy, self.arena)
+
+            if self.player.hp <= 0 or self.enemy.hp <= 0:
+                print("\n💀 战斗结束！有人倒在了残酷的战场环境下...")
+                break
+
             self.display_status()
 
             # 1. 玩家选牌 (等待终端输入)
@@ -61,13 +69,13 @@ class GameEngine:
             # (在目前的简化版里，我们默认玩家永远先出手。如果敌人被玩家秒杀了，敌人就不出手了)
 
             # 玩家执行卡牌
-            player_card.execute(caster=self.player, target=self.enemy, arena=self.arena)
+            player_card.play(caster=self.player, target=self.enemy, arena=self.arena)
             if self.enemy.hp <= 0:
                 print("\n🎉 胜利！你击败了敌人！")
                 break
 
             # 敌人执行卡牌
-            enemy_card.execute(caster=self.enemy, target=self.player, arena=self.arena)
+            enemy_card.play(caster=self.enemy, target=self.player, arena=self.arena)
             if self.player.hp <= 0:
                 print("\n💀 失败！你倒下了...")
                 break
@@ -113,3 +121,4 @@ if __name__ == "__main__":
         player_deck=player_starting_hand,
         enemy_deck=enemy_starting_hand
     )
+    game.run_game()

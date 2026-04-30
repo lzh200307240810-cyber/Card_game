@@ -1,6 +1,4 @@
 from utils import calculate_damage
-
-
 class Skill:
     # 稍微优化：给 power 设个默认值 0，因为改变环境的牌可能不需要 power 参数
     def __init__(self, name, skill_type, power=0, num=1,env_effect=None,status_target=None):
@@ -39,11 +37,10 @@ class Skill:
                 print("攻击失败：没有合法的目标或战场环境！")
 
         elif self.skill_type == "heal":
-            if target:
                 heal_amount = int(self.power)
-                target.hp += heal_amount
-                target.hp = min(target.hp, target.max_hp)
-                print(f"   -> 💚 [{target.name}] 恢复了 {heal_amount} 点 HP！当前 HP: {target.hp}")
+                caster.hp += heal_amount
+                caster.hp = min(caster.hp, caster.max_hp)
+                print(f"   -> 💚 [{caster.name}] 恢复了 {heal_amount} 点 HP！当前 HP: {caster.hp}")
 
         elif self.skill_type == "shield":
             caster.gain_shield(self.power)

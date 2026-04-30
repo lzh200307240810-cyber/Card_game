@@ -53,7 +53,6 @@ def calculate_damage(attacker, defender, arena, skill_multiplier=1.0, def_consta
     if actual_atk_num>1:
         print("连击 ",base_damage,"*",actual_atk_num)
     base_damage = actual_atk_num * base_damage
-    return int(base_damage)
     # 4. 环境干预 (重点在这里！调用天气的 modify_damage 来修改伤害)
     final_damage = arena.current_weather.modify_damage(attacker, defender, base_damage, arena)
 
@@ -150,14 +149,14 @@ class FireEntity(Entity):
         super().__init__(name, "fire", max_hp, atk, defense, damage_reduction)
 
         # 直接在子类里修改属性 (比如火系天生攻击力高 20%)
-        self.atk = int(self.atk * 1.20)
+        self.base_atk = int(self.atk * 1.20)
         self.miss=0.2
         print(f"🔥 [被动触发] {self.name} 是火系角色，基础攻击力提升 20%，当前面板攻击力为 {self.atk}！")
 
 class WaterEntity(Entity):
     def __init__(self, name, max_hp, atk, defense, damage_reduction=0.0):
         super().__init__(name, "water", max_hp, atk, defense, damage_reduction)
-        self.atk = int(self.atk * 1.10)
+        self.base_atk = int(self.atk * 1.10)
         self.defense = int(self.defense * 1.10)
         self.miss = 0.1
         self.ability="shapable"
@@ -172,7 +171,7 @@ class MetalEntity(Entity):
     def __init__(self, name, max_hp, atk, defense, damage_reduction=0.0):
         super().__init__(name, "metal", max_hp, atk, defense, damage_reduction)
         self.defense = int(self.defense * 1.20)
-        self.atk = int(self.atk * 1.20)
+        self.base_atk = int(self.atk * 1.20)
         self.sharp = 2
 
 class WoodEntity(Entity):
