@@ -55,6 +55,7 @@ class BattleEnvironment:
         self.combatants = []
         self.current_actor_index = 0
         self.see_all=False
+        self.skip_turn=False
 
     def log(self, message):
         print(message)

@@ -55,4 +55,10 @@ class Skill:
                 print(f"   -> 施展了驱散魔法！试图清除目标的 [{self.status_target}]")
                 target.statuses[self.status_target].clear()
 
+        elif self.skill_type == "poison":
+            if target:
+                target.statuses["poison"].add_stack(int(self.power))
+            else:
+                print("中毒失败：没有合法的目标！")
+
 

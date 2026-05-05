@@ -1,6 +1,6 @@
 import random
 
-from card_hub import DeckManager
+from card_hub import DeckManager, NORMAL_CARDS, LEVEL0_ENEMY_CARD
 from environment import CleanEnvironment, BattleEnvironment, RainEnvironment
 from utils import WaterEntity, FireEntity
 
@@ -31,8 +31,9 @@ class GameEngine:
         """处理玩家的交互输入"""
         print("\n👇 你的手牌：")
         for i, card in enumerate(self.player_deck):
-            # 🌟 修复：把 skill_type 改成了 card_type，并增加了 cost 显示
-            print(f"  [{i + 1}] 【{card.name}】 (类型: {card.card_type} | 描述: {card.description})")
+            # 🌟 显示扑克牌数字
+            poker_display = f"[{card.poker_value}]" if card.poker_value else ""
+            print(f"  [{i + 1}]  【{card.name}】 (类型: {card.card_type} | 描述: {card.description}) /{poker_display}/")
 
         while True:
             choice = input(f"请输入你要打出的卡牌编号 (1-{len(self.player_deck)}): ")
@@ -80,15 +81,6 @@ class GameEngine:
                 print("\n💀 失败！你倒下了...")
                 break
 
-            # 4. 回合结束的清理工作
-            # 临时护盾在回合结束时清零
-            if self.player.shield > 0:
-                print(f"   💨 {self.player.name} 的 {self.player.shield} 点临时护盾消散了。")
-                self.player.shield = 0
-            if self.enemy.shield > 0:
-                print(f"   💨 {self.enemy.name} 的 {self.enemy.shield} 点临时护盾消散了。")
-                self.enemy.shield = 0
-
             # 环境倒计时推进
             if not self.arena.current_weather.is_permanent:
                 self.arena.current_weather.duration -= 1
@@ -109,10 +101,11 @@ if __name__ == "__main__":
     hero = WaterEntity("水", max_hp=300, atk=50, defense=20)
     boss = FireEntity("火",  max_hp=500, atk=60, defense=30)
 
-    player_starting_hand = DeckManager.get_random_cards(5)
+    # 玩家从 NORMAL_CARDS 抽牌
+    player_starting_hand = DeckManager.get_cards_from_deck(NORMAL_CARDS, 5)
 
-    # 敌人也可以随机分发一些卡牌
-    enemy_starting_hand = DeckManager.get_random_cards(3)
+    # 敌人从 LEVEL0_ENEMY_CARD 抽牌
+    enemy_starting_hand = DeckManager.get_cards_from_deck(LEVEL0_ENEMY_CARD, 3)
 
     game = GameEngine(
         player=hero,
